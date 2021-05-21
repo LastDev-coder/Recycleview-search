@@ -1,14 +1,13 @@
 package com.max.recyceviewwithsearch;
 
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.SearchView;
 
 import com.max.recyceviewwithsearch.Adapter.RecycleviewAdapter;
 import com.max.recyceviewwithsearch.Adapter.mydatalist;
@@ -20,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     List<mydatalist> mydata;
     RecycleviewAdapter adapter;
+    EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycleView);
         recyclerView.setHasFixedSize(true);
-
+        editText = findViewById(R.id.editText);
         mydata = new ArrayList<>();
         mydata.add(new mydatalist("c"));
         mydata.add(new mydatalist("c++"));
@@ -47,28 +47,37 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.my_menu, menu);
-
-        MenuItem search = menu.findItem(R.id.searchicon);
-        SearchView searchView = (SearchView) search.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        editText.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
-                return false;
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
             }
         });
-
-        return true;
     }
+
+    private void filter(String toString) {
+
+        ArrayList filterList = new ArrayList();
+
+        for (mydatalist mydatalist : mydata) {
+            if (mydatalist.getName().toLowerCase().contains(toString.toLowerCase())) {
+                filterList.add(mydatalist);
+            }
+
+        }
+        adapter.getFilter(filterList);
+    }
+
+
 }
